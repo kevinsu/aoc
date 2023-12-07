@@ -8,7 +8,7 @@ class Almanac():
 
   def parse_input(self, input_file):
     with open(input_file, 'r') as file:
-      self.seeds = self.get_seeds_from_line_part2(file.readline())
+      self.seeds = self.get_seeds_from_line(file.readline())
       current_map = []      
       for line in file:
         if line == '\n':
@@ -32,13 +32,5 @@ class Almanac():
         source = seed_map.destination
       yield value
   
-  def get_seeds_from_line_part1(self, line):
+  def get_seeds_from_line(self, line):
     return map(int, line.strip().split(':')[1].strip().split(' ')) 
-
-  def get_seeds_from_line_part2(self, line):
-    raw_seeds = iter(line.strip().split(':')[1].strip().split(' '))
-    for start in raw_seeds:
-      range_length = next(raw_seeds)
-      for n in range(int(start), int(start)+int(range_length)):
-        yield n 
-     
