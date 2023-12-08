@@ -14,7 +14,6 @@ def main(argv):
     if node.name.endswith('A'):
       starting_nodes.append(node.name)
     nodes[node.name] = node 
-  current_node = 'AAA'
   steps_list = []
   for starting_node in starting_nodes:
     steps = 0
