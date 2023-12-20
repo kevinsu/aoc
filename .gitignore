@@ -1,5 +1,5 @@
 __pycache__
 *.pyc
 *.swp
-example.txt
+example*.txt
 input.txt

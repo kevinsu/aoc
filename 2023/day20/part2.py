@@ -4,17 +4,31 @@ import re
 
 class Executor():
   def __init__(self):
+    self.cycle_count = 0
     self.commands = []
     self.modules = {}
     self.high_count = 0
     self.low_count = 0
+    self.candidates = {} 
+    self.done = False
+
+  def track(self, candidates):
+    for candidate in candidates:
+      self.candidates[candidate] = 0
+
+  def lcm(self):
+    return math.lcm(*self.candidates.values())
 
   def count(self, sender, child, pulse):
     if pulse:
       self.high_count += 1
     else:
       self.low_count += 1
-    #print('%s -%s-> %s' % (sender, 'high' if pulse else 'low', child))
+    if (sender, child) in self.candidates and pulse:
+      if not self.candidates[(sender, child)]:
+        self.candidates[(sender, child)] = self.cycle_count
+      if all(self.candidates.values()):
+        self.done = True
 
   def send(self, sender, children, pulse):
     for child in children:
@@ -22,6 +36,7 @@ class Executor():
       self.commands.append((sender, self.modules[child], pulse)) 
 
   def execute(self):
+    self.cycle_count += 1
     while self.commands:
       sender, module, pulse = self.commands.pop(0)
       module.receive(sender, pulse)
@@ -99,8 +114,12 @@ class Output():
   def is_on(self):
     return False
 
-def get_highest_number_under(multiple, max):
-  return floor(max / multiple) * multiple
+def get_tracking_candidates(output, parents):
+  candidates = []
+  parent = parents[output][0]
+  for x in parents[parent]:
+    candidates.append((x, parent)) 
+  return candidates
 
 def main(argv):
   input_file = argv[0]
@@ -125,37 +144,23 @@ def main(argv):
         parents[child] = []
       parents[child].append(name) 
   for conjuction in conjuctions:
-    print(conjuction, parents[conjuction])
     executor.modules[conjuction].set_inputs(parents[conjuction])
-  executor.modules['output'] = Output('output') 
-  executor.modules['rx'] = Output('rx') 
+  child = None
+  for child in parents.keys():
+    if child not in executor.modules:
+      output = child
+  executor.modules[output] = Output(output) 
+  candidates = get_tracking_candidates(output, parents)
+  executor.track(candidates)
+  
   button = Broadcast(executor, 'button', ['broadcaster'])
 
-  presses = 0
-  high_count = 0
-  low_count = 0
-  while(presses < 1000):     
+  while(True):
+    if executor.done:
+      break
     button.receive('button', False)
     executor.execute()
-    executor.execute()
-    presses+=1
-    if not executor.is_on():
-      print(executor.high_count)
-      print(executor.low_count)
-      print(presses)
-      cycle = presses
-      presses = math.floor(1000 / presses) * presses 
-      high_count = executor.high_count * presses / cycle
-      low_count = executor.low_count * presses / cycle
-      executor.high_count = 0
-      executor.low_count = 0
-      print(high_count)
-      print(low_count)
-      print(presses)
-  high_count += executor.high_count
-  low_count += executor.low_count 
-  print(high_count * low_count)
-  
+  print(executor.lcm())
 
 if __name__ == "__main__":
   main(sys.argv[1:])
