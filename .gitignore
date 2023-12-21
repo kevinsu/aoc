@@ -3,3 +3,4 @@ __pycache__
 *.swp
 example*.txt
 input.txt
+test*.txt
