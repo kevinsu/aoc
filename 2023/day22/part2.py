@@ -71,15 +71,21 @@ class Grid():
         for s in brick.supports:
           counts[s.name] += 1
     count = 0
+    sum = 0
     for brick in input:
-      can = True
-      for s in brick.supports:
-        if counts[s.name] <= 1:
-          can = False
-          break
-      if can:
-        count += 1
-    return count 
+      temp_counts = counts.copy()
+      todo = [brick]
+      disintegrated = set() 
+      while todo:
+        current_brick = todo.pop(0)
+        for s in current_brick.supports:
+          temp_counts[s.name] -= 1 
+          if temp_counts[s.name] == 0:
+            if s.name not in disintegrated:
+              disintegrated.add(s.name)
+              todo.append(s) 
+      sum += len(disintegrated)
+    return sum 
            
 def get_bricks(input):
   file = open(input, 'r')
