@@ -11,15 +11,14 @@ def build_graph(input):
     node, neighbors = line.split(":")
     for neighbor in neighbors.split():
       graph[node].add(neighbor)
-      graph[neighbor].add(node)
   return graph      
 
 def build_graphviz(graph, output):
   file = open(output, 'w')
-  file.write("digraph G {\n")
+  file.write("graph G {\n")
+  file.write("  node [fontname=\"Helvetica,Arial,sans-serif\"]")
   for node, neighbors in graph.items():
-    for neighbor in neighbors:
-      file.write(f"  {node} -> {neighbor};\n")    
+    file.write("  %s -- { %s };\n" % (node, " ".join(neighbors)))
   file.write("}")
       
 def main(argv):
