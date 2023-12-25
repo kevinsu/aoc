@@ -1,6 +1,7 @@
 import sys
 import re
 import itertools
+import z3
 
 class Hailstone:
   def __init__(self, input_line):
@@ -20,7 +21,7 @@ class Hailstone:
     m1 = self.vy/self.vx
     b2 = other.y - other.x/other.vx*other.vy
     m2 = other.vy/other.vx
-    if m1 == m2:
+    if m1 == m2: 
       return None, None
     x = -(b2 - b1) / (m2 - m1)
     t1 = (x-self.x)/self.vx
@@ -37,7 +38,7 @@ def count_intersections(hailstones, min_val, max_val):
       continue 
     if x >= min_val and x <= max_val and y >= min_val and y <= max_val:
       count+=1
-  return count
+  print(count)
 
 def main(argv):
   input_file = argv[0]
@@ -46,7 +47,25 @@ def main(argv):
   for line in file.readlines():
     hailstone = Hailstone(line.strip())
     hailstones.append(hailstone)
-  print(count_intersections(hailstones, 200000000000000, 400000000000000))
+  solver = z3.Solver()
+  x = z3.Int("x")
+  y = z3.Int("y")
+  z = z3.Int("z")
+  vx = z3.Int("vx")
+  vy = z3.Int("vy")
+  vz = z3.Int("vz")
+  for i, h in enumerate(hailstones):
+    t = z3.Int(f"t{i}")
+    solver.add(x + vx*t == h.x+h.vx*t)
+    solver.add(y + vy*t == h.y+h.vy*t)
+    solver.add(z + vz*t == h.z+h.vz*t)
 
+  print(solver.check())
+  print(solver.model().eval(x+y+z))
+  print(solver.model().eval(vx))
+  print(solver.model().eval(vy))
+  print(solver.model().eval(vz))
+
+  
 if __name__ == "__main__":
   main(sys.argv[1:])
