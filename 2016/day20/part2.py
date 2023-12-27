@@ -9,12 +9,18 @@ def main(argv):
   for line in file.readlines():
     splits = line.strip().split('-')
     intervals.append((int(splits[0]), int(splits[1])))
+  intervals.append((4294967295, 4294967296))
+  eligible = []
   next_eligible = 0
+  start_blacklist = None
   for interval in sorted(intervals):
-    if interval[0] > next_eligible:
-      break
-    next_eligible = max(next_eligible, interval[1]+1)
-  print(next_eligible)
+    if next_eligible < interval[0]:
+      eligible.append((next_eligible, interval[0]-1))
+    next_eligible = max(interval[1]+1, next_eligible) 
+  sum = 0
+  for x, y in eligible:
+    sum+= y-x+1
+  print(sum)
 
 if __name__ == "__main__":
   main(sys.argv[1:])
