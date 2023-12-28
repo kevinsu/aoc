@@ -2,6 +2,11 @@ import heapq
 import sys
 from common.io import get_2d_string_input, pretty_print
 
+def display(grid):
+  for row in grid:
+    print(' '.join(list(map(str, row))))
+  print()
+
 def get_shortest_paths(grid, x, y):
   distances = [[sys.maxsize]*len(grid[0]) for x in grid]
   distances[x][y] = 0
