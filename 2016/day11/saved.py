@@ -1,38 +1,14 @@
 import sys
 import itertools
-import heapq
 from common.perf import profiler
 from copy import deepcopy
 import re
 
-def get_state_string2(state):
+def get_state_string(state):
   result = ''
   for i in range(0, len(state[1])):
     result += str(i+1) + ','.join(sorted(state[1][i]))
   return '%s:%s' % (state[0], result)
-
-def get_state_string(state):
-  generators = {}
-  microchips = {}
-  for i in range(0, len(state[1])):
-    floor = state[1][i] 
-    for obj in floor:
-      element, t = obj.split('-')
-      if t == 'g':
-        generators[element] = i
-      else:
-        microchips[element] = i
-  pairs = []
-  for key in microchips.keys():
-    pairs.append((generators[key], microchips[key]))
-  return '%s:%s' % (state[0], str(sorted(pairs)))
-    
-      
-def get_distance(state):
-  sum = 0
-  for i in range(0, len(state[1])):
-    sum += len(state[1][i]) * (3-i) 
-  return sum
 
 def is_finished(state):
   for i in range(0, len(state[1])-1):
@@ -100,32 +76,22 @@ def get_next_states(state):
      
 def find_shortest(state):
   visited = set() 
-  #todo = [(0, state)]
-  todo = []
-  heapq.heappush(todo, (get_distance(state), 0, state))
+  todo = [(0, state)]
   counter = 0
-  visited_counter = 0
   while todo:
     counter += 1
-    current_distance, num_steps, current_state = heapq.heappop(todo)
-    #num_steps, current_state = todo.pop(0)
-    if is_finished(current_state):
-      print(counter)
-      return num_steps
-    current_key = get_state_string(current_state)
-    if current_key in visited:
-      visited_counter += 1 
-      continue
     if counter % 1000 == 0:
-      print(counter, num_steps, len(todo), len(visited), visited_counter)
+      print(counter, len(todo))
+    current_distance, current_state = todo.pop(0)
+    if is_finished(current_state):
+      return current_distance
+    current_key = get_state_string(current_state)
     visited.add(current_key)
     for next_state in get_next_states(current_state):
       next_key = get_state_string(next_state)
       if next_key in visited:
         continue 
-      heapq.heappush(todo, (get_distance(next_state)+num_steps+1, num_steps+1, next_state))
-      #todo.append((num_steps+1, next_state))
-  print(counter)
+      todo.append((current_distance+1, next_state))
 
 @profiler
 def main(argv):

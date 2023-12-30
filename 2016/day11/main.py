@@ -116,8 +116,6 @@ def find_shortest(state):
     if current_key in visited:
       visited_counter += 1 
       continue
-    if counter % 1000 == 0:
-      print(counter, num_steps, len(todo), len(visited), visited_counter)
     visited.add(current_key)
     for next_state in get_next_states(current_state):
       next_key = get_state_string(next_state)
@@ -125,7 +123,6 @@ def find_shortest(state):
         continue 
       heapq.heappush(todo, (get_distance(next_state)+num_steps+1, num_steps+1, next_state))
       #todo.append((num_steps+1, next_state))
-  print(counter)
 
 @profiler
 def main(argv):
