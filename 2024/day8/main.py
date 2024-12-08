@@ -13,24 +13,6 @@ def get_antinodes(grid, n1, n2):
         yield a2
 
 
-def part1(grid):
-    antennae = {}
-    for i in range(0, len(grid)):
-        for j in range(0, len(grid[0])):
-            node = grid[i][j]
-            if node == '.':
-                continue
-            if node not in antennae:
-                antennae[node] = []
-            antennae[node].append((int(i), int(j)))
-    antinodes = set()
-    for freq, nodes in antennae.items():
-        for n1, n2 in combinations(nodes, 2):
-            for antinode in get_antinodes(grid, n1, n2):
-                antinodes.add(antinode)
-    return len(antinodes)
-
-
 def get_antinodes_line(grid, n1, n2):
     yield n1
     yield n2
@@ -51,7 +33,7 @@ def get_antinodes_line(grid, n1, n2):
             break
 
 
-def part2(grid):
+def count(grid, get_antinodes_fn):
     antennae = {}
     for i in range(0, len(grid)):
         for j in range(0, len(grid[0])):
@@ -64,9 +46,17 @@ def part2(grid):
     antinodes = set()
     for nodes in antennae.values():
         for n1, n2 in combinations(nodes, 2):
-            for antinode in get_antinodes_line(grid, n1, n2):
+            for antinode in get_antinodes_fn(grid, n1, n2):
                 antinodes.add(antinode)
     return len(antinodes)
+
+
+def part1(grid):
+    return count(grid, get_antinodes)
+
+
+def part2(grid):
+    return count(grid, get_antinodes_line)
 
 
 @profiler
