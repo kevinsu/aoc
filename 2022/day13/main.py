@@ -5,7 +5,6 @@ from common.perf import profiler
 from itertools import zip_longest
 
 def in_order(left, right):
-  #print('in_order: ', left, right)
   for l, r in zip_longest(left, right, fillvalue=None):
     result = None
     if l == None:
@@ -63,7 +62,7 @@ def main(argv):
   input_file = argv[0]
   file = open(input_file, 'r')
   pairs = file.read().split('\n\n')
-  #print(part1(pairs))
+  print(part1(pairs))
   print(part2(pairs))
 
 if __name__ == "__main__":
