@@ -3,7 +3,6 @@ import re
 import sys
 from common.perf import profiler
 
-
 def get_fn(expr):
     if '+' in expr:
         _, right = expr.split('+')
