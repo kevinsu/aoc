@@ -57,8 +57,7 @@ def part2(pairs):
         product = product * (i+1)
 
   return product
-        
-   
+           
 @profiler
 def main(argv):
   input_file = argv[0]
