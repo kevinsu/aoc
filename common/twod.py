@@ -6,11 +6,15 @@ def get_slope(line_segment):
 def get_intercept(slope, x, y):
 	return y - slope*x
 
+# Gets intersection, but doesn't deal with colinear segments.  
 def get_intersection(line_segment1, line_segment2):
 	slope1 = get_slope(line_segment1)
-	slope2 = get_slope(line_segment2)
-	if slope1 == slope2:
+	slope2 = get_slope(line_segment2)	
+	if slope1 == slope2:		
 		return None
+	if slope1 == None or slope2 == None:
+		# TODO Deal with a vertical line
+		pass		
 	b1 = get_intercept(slope1, line_segment1[0], line_segment1[1])
 	b2 = get_intercept(slope2, line_segment2[0], line_segment2[1])
 	x = (b2-b1) / (slope1-slope2)
